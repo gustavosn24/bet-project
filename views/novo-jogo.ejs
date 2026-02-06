@@ -1,0 +1,29 @@
+<h1>Cadastrar Novo Jogo</h1>
+
+<form method="POST" action="/novo-jogo">
+  <label>Categoria:</label>
+  <select name="id_categoria">
+    <% categorias.forEach(cat => { %>
+      <option value="<%= cat.id %>"><%= cat.nome %></option>
+    <% }) %>
+  </select>
+
+  <br><br>
+
+  <input type="text" name="time_casa" placeholder="Time Casa" required>
+  <input type="text" name="time_fora" placeholder="Time Fora" required>
+
+  <br><br>
+
+  <input type="datetime-local" name="data_jogo" required>
+
+  <br><br>
+
+  <input type="number" step="0.01" name="odd_casa" placeholder="Odd Casa">
+  <input type="number" step="0.01" name="odd_empate" placeholder="Odd Empate">
+  <input type="number" step="0.01" name="odd_fora" placeholder="Odd Fora">
+
+  <br><br>
+
+  <button type="submit">Salvar</button>
+</form>

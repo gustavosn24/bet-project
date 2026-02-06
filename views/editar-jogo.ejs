@@ -1,0 +1,59 @@
+<h1>Editar Jogo</h1>
+
+<form method="POST" action="/editar-jogo/<%= jogo.id %>">
+
+  <label>Categoria:</label>
+  <select name="id_categoria">
+    <% categorias.forEach(cat => { %>
+      <option value="<%= cat.id %>" 
+        <%= cat.id === jogo.id_categoria ? 'selected' : '' %>>
+        <%= cat.nome %>
+      </option>
+    <% }) %>
+  </select>
+
+  <br><br>
+
+  <input type="text" name="time_casa" value="<%= jogo.time_casa %>">
+  <input type="text" name="time_fora" value="<%= jogo.time_fora %>">
+
+  <br><br>
+
+  <input type="datetime-local" name="data_jogo"
+    value="<%= jogo.data_jogo.toISOString().slice(0,16) %>">
+
+  <br><br>
+
+  <input type="number" step="0.01" name="odd_casa" value="<%= jogo.odd_casa %>">
+  <input type="number" step="0.01" name="odd_empate" value="<%= jogo.odd_empate %>">
+  <input type="number" step="0.01" name="odd_fora" value="<%= jogo.odd_fora %>">
+
+  <br><br>
+
+  <label>Status:</label>
+  <select name="status">
+    <option value="ABERTO" <%= jogo.status === 'ABERTO' ? 'selected' : '' %>>ABERTO</option>
+    <option value="FECHADO" <%= jogo.status === 'FECHADO' ? 'selected' : '' %>>FECHADO</option>
+    <option value="FINALIZADO" <%= jogo.status === 'FINALIZADO' ? 'selected' : '' %>>FINALIZADO</option>
+  </select>
+
+  <br><br>
+
+  <label>Resultado:</label>
+  <select name="resultado">
+    <option value="">--</option>
+    <option value="TIME CASA VENCEU" <%= jogo.resultado === 'TIME CASA VENCEU' ? 'selected' : '' %>>
+      Time Casa
+    </option>
+    <option value="EMPATE" <%= jogo.resultado === 'EMPATE' ? 'selected' : '' %>>
+      Empate
+    </option>
+    <option value="TIME FORA VENCEU" <%= jogo.resultado === 'TIME FORA VENCEU' ? 'selected' : '' %>>
+      Time Fora
+    </option>
+  </select>
+
+  <br><br>
+
+  <button type="submit">Atualizar</button>
+</form>

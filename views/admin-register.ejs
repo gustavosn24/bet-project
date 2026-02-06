@@ -1,0 +1,36 @@
+<h2>Criar Conta</h2>
+
+<% if (erro) { %>
+
+  <p style="color:red;"><%= erro %></p>
+<% } %>
+
+<form action="/admin/register" method="POST">
+  <div>
+    <label>CPF</label><br>
+    <input type="text" name="cpf" required>
+  </div>
+
+  <div>
+    <label>Nome</label><br>
+    <input type="text" name="nome" required>
+  </div>
+
+  <div>
+    <label>Email</label><br>
+    <input type="email" name="email" required>
+  </div>
+
+  <div>
+    <label>Senha</label><br>
+    <input type="password" name="senha" required>
+  </div>
+
+<button type="submit">Registrar</button>
+
+</form>
+
+<p>
+  Já tem conta?
+  <a href="/admin/login">Entrar</a>
+</p>

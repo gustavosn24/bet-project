@@ -1,0 +1,11 @@
+<h2>Login</h2>
+
+<form method="POST" action="/admin/login">
+  <input type="email" name="email" placeholder="Email" required>
+  <input type="password" name="senha" placeholder="Senha" required>
+  <button>Entrar</button>
+</form>
+
+<% if (erro) { %>
+  <p style="color:red;"><%= erro %></p>
+<% } %>

@@ -1,0 +1,51 @@
+<h2>Bem-vindo, <%= usuario.nome %></h2>
+<p>Saldo disponível: <strong>R$ <%= usuario.saldo %></strong></p>
+
+<hr>
+
+<h3>Jogos disponíveis para aposta</h3>
+
+<% if (jogos.length === 0) { %>
+
+  <p>Nenhum jogo disponível no momento.</p>
+<% } %>
+
+<% jogos.forEach(jogo => { %>
+
+  <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
+    <p><strong><%= jogo.categoria %></strong></p>
+    <p>
+      <%= jogo.time_casa %> x <%= jogo.time_fora %><br>
+      Data: <%= jogo.data_jogo %>
+    </p>
+
+```
+<form action="/apostar" method="POST">
+  <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
+
+  <label>
+    <input type="radio" name="palpite" value="CASA" required>
+    <%= jogo.time_casa %> (Odd: <%= jogo.odd_casa %>)
+  </label><br>
+
+  <label>
+    <input type="radio" name="palpite" value="EMPATE">
+    Empate (Odd: <%= jogo.odd_empate %>)
+  </label><br>
+
+  <label>
+    <input type="radio" name="palpite" value="FORA">
+    <%= jogo.time_fora %> (Odd: <%= jogo.odd_fora %>)
+  </label><br><br>
+
+  <input type="number" name="valor" placeholder="Valor da aposta" min="1" required>
+
+  <br><br>
+  <button type="submit">Apostar</button>
+</form>
+```
+
+  </div>
+<% }) %>
+
+<a href="/logout">Sair</a>

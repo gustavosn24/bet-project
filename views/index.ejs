@@ -1,0 +1,39 @@
+<% if (usuario) { %>
+  Olá, <%= usuario.nome %> |
+  Saldo: R$ <%= usuario.saldo %>
+  <a href="/logout">Sair</a>
+<% } %>
+<h1>Lista de Jogos</h1>
+
+<table border="1">
+  <tr>
+    <th>Categoria</th>
+    <th>Time Casa</th>
+    <th>Time Fora</th>
+    <th>Data</th>
+    <th>Odd Casa</th>
+    <th>Odd Empate</th>
+    <th>Odd Fora</th>
+    <th>Status</th>
+    <th>Resultado</th>
+    <th>Ações</th>
+  </tr>
+
+  <% jogos.forEach(jogo => { %>
+    <tr>
+      <td><%= jogo.categoria %></td>
+      <td><%= jogo.time_casa %></td>
+      <td><%= jogo.time_fora %></td>
+      <td><%= jogo.data_jogo %></td>
+      <td><%= jogo.odd_casa %></td>
+      <td><%= jogo.odd_empate %></td>
+      <td><%= jogo.odd_fora %></td>
+      <td><%= jogo.status %></td>
+            <td><%= jogo.resultado || '-' %></td>
+      <td>
+        <a href="/editar-jogo/<%= jogo.id %>">Editar</a>
+        <a href="/excluir-jogo/<%= jogo.id %>" onclick="return confirm('Tem certeza que deseja deletar este jogo?');"> Deletar</a>
+      </td>
+    </tr>
+  <% }) %>
+</table>
