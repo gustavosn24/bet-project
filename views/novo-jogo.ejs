@@ -2,125 +2,57 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Cadastrar Novo Jogo</title>
-
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0;
-    }
-
-    .container {
-      background: #fff;
-      padding: 30px 35px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 500px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #333;
-    }
-
-    label {
-      font-size: 14px;
-      color: #555;
-      font-weight: bold;
-    }
-
-    select,
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.3s;
-    }
-
-    select:focus,
-    input:focus {
-      border-color: #2c5364;
-    }
-
-    .times {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .odds {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .odds input {
-      text-align: center;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      background: #2c5364;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: #203a43;
-    }
-  </style>
+  <title>Novo Jogo</title>
 </head>
-
 <body>
-  <div class="container">
-    <h1>Cadastrar Novo Jogo</h1>
 
-  <form method="POST" action="/admin/jogos/novo">
+<h2>Cadastrar Novo Jogo</h2>
+
+<form action="/admin/jogos/novo" method="POST">
+
   <label>Categoria</label>
-  <select name="id_categoria" required>
-    <% if (typeof categorias !== 'undefined' && categorias.length > 0) { %>
-      <% categorias.forEach(cat => { %>
-        <option value="<%= cat.id %>"><%= cat.nome %></option>
-      <% }) %>
-    <% } else { %>
-      <option disabled>Nenhuma categoria encontrada</option>
-    <% } %>
-  </select>
+<select name="id_categoria" required>
+  <option value="">Selecione uma categoria</option>
+  <% if (categorias && categorias.length > 0) { %>
+    <% categorias.forEach(cat => { %>
+      <option value="<%= cat.id %>"><%= cat.nome %></option>
+    <% }) %>
+  <% } else { %>
+    <option disabled>Nenhuma categoria encontrada no banco</option>
+  <% } %>
+</select>
 
-      <div class="times">
-        <input type="text" name="time_casa" placeholder="Time Casa" required>
-        <input type="text" name="time_fora" placeholder="Time Fora" required>
-      </div>
+  <br><br>
 
-      <label style="margin-top:15px; display:block;">Data e Hora do Jogo</label>
-      <input type="datetime-local" name="data_jogo" required>
+  <label>Time da Casa</label>
+  <input type="text" name="time_casa" required>
 
-      <div class="odds">
-        <input type="number" step="0.01" name="odd_casa" placeholder="Odd Casa" required>
-        <input type="number" step="0.01" name="odd_empate" placeholder="Odd Empate" required>
-        <input type="number" step="0.01" name="odd_fora" placeholder="Odd Fora" required>
-      </div>
+  <br><br>
 
-      <button type="submit">Salvar</button>
-    </form>
-  </div>
+  <label>Time de Fora</label>
+  <input type="text" name="time_fora" required>
+
+  <br><br>
+
+  <label>Data do Jogo</label>
+  <input type="datetime-local" name="data_jogo" required>
+
+  <br><br>
+
+  <label>Odd Casa</label>
+  <input type="number" step="0.01" name="odd_casa" required>
+
+  <label>Odd Empate</label>
+  <input type="number" step="0.01" name="odd_empate" required>
+
+  <label>Odd Fora</label>
+  <input type="number" step="0.01" name="odd_fora" required>
+
+  <br><br>
+
+  <button type="submit">Cadastrar Jogo</button>
+
+</form>
+
 </body>
 </html>

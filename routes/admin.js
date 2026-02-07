@@ -2,7 +2,7 @@ console.log('✅ admin router carregado');
 
 var express = require('express');
 var router = express.Router();
-const db = require('../db'); // Certifique-se de que o caminho para seu db.js está correto
+const db = require('../utils/db'); // Certifique-se de que o caminho para seu db.js está correto
 
 /* --- LOGIN & REGISTER --- */
 router.get('/login', (req, res) => {
@@ -23,41 +23,63 @@ router.post('/register', (req, res) => {
 
 /* --- GESTÃO DE JOGOS --- */
 
-// Rota para EXIBIR o formulário (Atualizada para buscar do Banco)
+/* --- GESTÃO DE JOGOS --- */
+
+// Rota para EXIBIR o formulário
 router.get('/jogos/novo', (req, res) => {
-  const sql = "SELECT * FROM categorias_jogos"; // Busca categorias reais do seu banco
+  const sql = "SELECT * FROM categorias_jogos";
 
   db.query(sql, (err, results) => {
     if (err) {
-      console.error("Erro ao buscar categorias:", err);
-      return res.status(500).send("Erro ao carregar categorias.");
+      console.error("❌ Erro ao buscar categorias:", err);
+      // Passamos um array vazio para o EJS não dar erro de "categorias is not defined"
+      return res.render('novo-jogo', { categorias: [], erro: "Erro ao carregar categorias do banco." });
     }
     
-    // Renderiza a view passando os dados que vieram do banco de dados
-    res.render('novo-jogo', { categorias: results });
+    // DEBUG: Verifique se aparece algo no seu terminal do VS Code quando você carrega a página
+    console.log("📊 Dados recuperados do banco:", results);
+    
+    // Renderiza a view enviando os resultados (results sempre deve ser um array)
+    res.render('novo-jogo', { categorias: results || [] });
   });
 });
 
 // Rota para RECEBER os dados do formulário
 router.post('/jogos/novo', (req, res) => {
-    const { id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora } = req.body;
+  const {
+    id_categoria,
+    time_casa,
+    time_fora,
+    data_jogo,
+    odd_casa,
+    odd_empate,
+    odd_fora
+  } = req.body;
 
-    const sql = `
-        INSERT INTO jogos 
-        (id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `;
+  if (!id_categoria || !time_casa || !time_fora || !data_jogo) {
+    return res.status(400).send('Preencha todos os campos obrigatórios');
+  }
 
-    db.query(sql, [id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora], (err, result) => {
-        if (err) {
-            // Se o erro for ER_NO_REFERENCED_ROW_2, significa que o ID da categoria não existe no banco
-            console.error("Erro detalhado no banco:", err);
-            return res.status(500).send("Erro interno ao salvar o jogo. Verifique se a categoria existe.");
-        }
+  const sql = `
+    INSERT INTO jogos
+    (id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
-        console.log("✅ Jogo salvo no banco com ID:", result.insertId);
-        res.send('Jogo cadastrado com sucesso no banco de dados!');
-    });
+  db.query(
+    sql,
+    [id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora],
+    (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).send('Erro ao salvar jogo');
+      }
+
+      console.log('✅ Jogo criado:', result.insertId);
+      res.redirect('/admin/jogos/novo'); // ou lista de jogos
+    }
+  );
 });
+
 
 module.exports = router;
