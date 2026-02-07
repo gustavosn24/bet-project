@@ -88,24 +88,22 @@ router.post('/jogos/editar/:id', (req, res) => {
     });
 });
 
-/* --- ROTA PARA EXCLUIR JOGO --- */
-router.get('/jogos/deletar/:id', (req, res) => {
+// 5. EXCLUIR JOGO (POST)
+router.post('/jogos/excluir/:id', (req, res) => {
     const id = req.params.id;
-
     const sql = "DELETE FROM jogos WHERE id = ?";
 
     db.query(sql, [id], (err, result) => {
         if (err) {
             console.error("❌ Erro ao excluir jogo:", err);
-            return res.status(500).send("Erro ao excluir o jogo do banco de dados.");
+            return res.status(500).send("Erro ao tentar excluir o jogo.");
         }
 
-        console.log(`✅ Jogo com ID ${id} foi excluído com sucesso.`);
-        
-        // Redireciona de volta para a lista ou para o formulário de novo jogo
-        res.redirect('/admin/jogos/novo');
+        console.log(`🗑️ Jogo ${id} excluído com sucesso.`);
+        res.redirect('/admin/jogos/novo'); // Ou para a sua listagem de jogos
     });
 });
+
 
 
 module.exports = router;

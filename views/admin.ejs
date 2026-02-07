@@ -173,14 +173,13 @@
                     ✏️ Editar
                   </a>
 
-                  <form action="/admin/jogos/deletar/<%= jogo.id %>" method="POST">
-                    <button
-                      type="submit"
-                      class="btn-delete"
-                      onclick="return confirm('Deseja realmente excluir este jogo?')">
-                      🗑️
-                    </button>
-                  </form>
+                  <form action="/admin/jogos/excluir/<%= jogo.id %>" method="POST" style="display:inline;">
+    <button type="submit" 
+            onclick="return confirm('Tem certeza que deseja excluir este jogo?')" 
+            style="color: red; cursor: pointer;">
+        Excluir
+    </button>
+</form>
                 </div>
               </td>
             </tr>
