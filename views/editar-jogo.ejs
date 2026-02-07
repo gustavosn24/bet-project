@@ -89,13 +89,12 @@
   <div class="container">
     <h1>Editar Jogo</h1>
 
-    <form method="POST" action="/editar-jogo/<%= jogo.id %>">
+    <form action="/admin/jogos/editar/<%= jogo.id %>" method="POST">
 
       <label>Categoria</label>
       <select name="id_categoria">
         <% categorias.forEach(cat => { %>
-          <option value="<%= cat.id %>" 
-            <%= cat.id === jogo.id_categoria ? 'selected' : '' %>>
+          <option value="<%= cat.id %>" <%= cat.id == jogo.id_categoria ? 'selected' : '' %>>
             <%= cat.nome %>
           </option>
         <% }) %>
@@ -107,38 +106,35 @@
       </div>
 
       <label>Data do Jogo</label>
-      <input
-        type="datetime-local"
-        name="data_jogo"
-        value="<%= jogo.data_jogo.toISOString().slice(0,16) %>"
-        required
-      >
+      <% 
+        // Tratamento para garantir que a data não quebre o formulário
+        let dataValue = "";
+        if (jogo.data_jogo) {
+          const d = new Date(jogo.data_jogo);
+          dataValue = d.toISOString().slice(0,16);
+        }
+      %>
+      <input type="datetime-local" name="data_jogo" value="<%= dataValue %>" required>
 
       <div class="row">
-        <input type="number" step="0.01" name="odd_casa" placeholder="Odd Casa" value="<%= jogo.odd_casa %>">
-        <input type="number" step="0.01" name="odd_empate" placeholder="Odd Empate" value="<%= jogo.odd_empate %>">
-        <input type="number" step="0.01" name="odd_fora" placeholder="Odd Fora" value="<%= jogo.odd_fora %>">
+        <input type="number" step="0.01" name="odd_casa" value="<%= jogo.odd_casa %>">
+        <input type="number" step="0.01" name="odd_empate" value="<%= jogo.odd_empate %>">
+        <input type="number" step="0.01" name="odd_fora" value="<%= jogo.odd_fora %>">
       </div>
 
       <label>Status</label>
       <select name="status">
-        <option value="ABERTO" <%= jogo.status === 'ABERTO' ? 'selected' : '' %>>ABERTO</option>
-        <option value="FECHADO" <%= jogo.status === 'FECHADO' ? 'selected' : '' %>>FECHADO</option>
-        <option value="FINALIZADO" <%= jogo.status === 'FINALIZADO' ? 'selected' : '' %>>FINALIZADO</option>
+        <option value="ABERTO" <%= jogo.status == 'ABERTO' ? 'selected' : '' %>>ABERTO</option>
+        <option value="FECHADO" <%= jogo.status == 'FECHADO' ? 'selected' : '' %>>FECHADO</option>
+        <option value="FINALIZADO" <%= jogo.status == 'FINALIZADO' ? 'selected' : '' %>>FINALIZADO</option>
       </select>
 
       <label>Resultado</label>
       <select name="resultado">
         <option value="">--</option>
-        <option value="TIME CASA VENCEU" <%= jogo.resultado === 'TIME CASA VENCEU' ? 'selected' : '' %>>
-          Time Casa
-        </option>
-        <option value="EMPATE" <%= jogo.resultado === 'EMPATE' ? 'selected' : '' %>>
-          Empate
-        </option>
-        <option value="TIME FORA VENCEU" <%= jogo.resultado === 'TIME FORA VENCEU' ? 'selected' : '' %>>
-          Time Fora
-        </option>
+        <option value="TIME CASA VENCEU" <%= jogo.resultado == 'TIME CASA VENCEU' ? 'selected' : '' %>>Time Casa</option>
+        <option value="EMPATE" <%= jogo.resultado == 'EMPATE' ? 'selected' : '' %>>Empate</option>
+        <option value="TIME FORA VENCEU" <%= jogo.resultado == 'TIME FORA VENCEU' ? 'selected' : '' %>>Time Fora</option>
       </select>
 
       <button type="submit">Atualizar Jogo</button>
