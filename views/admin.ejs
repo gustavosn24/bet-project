@@ -3,12 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel do Administrador</title>
-
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
@@ -16,24 +12,14 @@
       color: #e5e7eb;
       padding: 30px;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-    }
-
+    .container { max-width: 1200px; margin: auto; }
     .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 25px;
     }
-
-    h1 {
-      margin: 0;
-      font-size: 26px;
-    }
-
+    h1 { margin: 0; font-size: 26px; }
     .btn-add {
       background: #22c55e;
       color: #022c22;
@@ -43,92 +29,33 @@
       font-weight: bold;
       transition: background 0.3s;
     }
-
-    .btn-add:hover {
-      background: #16a34a;
-    }
-
+    .btn-add:hover { background: #16a34a; }
     .card {
       background: #020617;
       border-radius: 14px;
       padding: 20px;
       box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    thead {
-      background: #1e293b;
-    }
-
-    th {
-      padding: 14px 10px;
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #1e293b;
-      font-size: 14px;
-      text-align: center;
-    }
-
-    tbody tr:hover {
-      background: rgba(59,130,246,0.08);
-    }
-
-    .acoes {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    thead { background: #1e293b; }
+    th { padding: 14px 10px; font-size: 14px; text-transform: uppercase; }
+    td { padding: 12px 10px; border-bottom: 1px solid #1e293b; font-size: 14px; text-align: center; }
+    .acoes { display: flex; justify-content: center; gap: 8px; }
     a, button {
-      border: none;
-      cursor: pointer;
-      border-radius: 6px;
-      padding: 7px 12px;
-      font-size: 13px;
-      color: #fff;
-      transition: opacity 0.3s, transform 0.2s;
+      border: none; cursor: pointer; border-radius: 6px;
+      padding: 7px 12px; font-size: 13px; color: #fff;
+      transition: 0.2s;
     }
-
-    a:hover, button:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
-    }
-
-    .btn-edit {
-      background: #3b82f6;
-      text-decoration: none;
-    }
-
-    .btn-delete {
-      background: #ef4444;
-    }
-
-    form {
-      display: inline;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 20px;
-      color: #9ca3af;
-      font-style: italic;
-    }
+    .btn-edit { background: #3b82f6; text-decoration: none; }
+    .btn-delete { background: #ef4444; }
+    .btn-finish { background: #10b981; }
+    button:hover { opacity: 0.8; transform: scale(1.05); }
+    .empty { text-align: center; padding: 20px; color: #9ca3af; }
   </style>
 </head>
 
 <body>
   <div class="container">
-
     <div class="header">
       <h1>⚙️ Painel do Administrador</h1>
       <a href="/admin/jogos/novo" class="btn-add">➕ Novo Jogo</a>
@@ -139,47 +66,38 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>Time Casa</th>
-            <th>Time Fora</th>
+            <th>Confronto</th>
             <th>Data</th>
-            <th>Odd Casa</th>
-            <th>Odd Empate</th>
-            <th>Odd Fora</th>
+            <th>Odds (C/E/F)</th>
             <th>Ações</th>
           </tr>
         </thead>
-
         <tbody>
           <% if (jogos.length === 0) { %>
             <tr>
-              <td colspan="8" class="empty">
-                Nenhum jogo cadastrado
-              </td>
+              <td colspan="5" class="empty">Nenhum jogo cadastrado</td>
             </tr>
           <% } %>
 
           <% jogos.forEach(jogo => { %>
             <tr>
               <td><%= jogo.id %></td>
-              <td><%= jogo.time_casa %></td>
-              <td><%= jogo.time_fora %></td>
+              <td><strong><%= jogo.time_casa %></strong> vs <strong><%= jogo.time_fora %></strong></td>
               <td><%= jogo.data_jogo %></td>
-              <td><%= jogo.odd_casa %></td>
-              <td><%= jogo.odd_empate %></td>
-              <td><%= jogo.odd_fora %></td>
+              <td><%= jogo.odd_casa %> | <%= jogo.odd_empate %> | <%= jogo.odd_fora %></td>
               <td>
                 <div class="acoes">
-                  <a href="/admin/jogos/editar/<%= jogo.id %>" class="btn-edit">
-                    ✏️ Editar
-                  </a>
+                  <% if (jogo.status !== 'FINALIZADO') { %>
+                    <button class="btn-finish" onclick="finalizarJogo('<%= jogo.id %>')">
+                       🏆 Finalizar
+                    </button>
+                  <% } else { %>
+                    <span style="color: #64748b;">Encerrado</span>
+                  <% } %>
 
-                  <form action="/admin/jogos/excluir/<%= jogo.id %>" method="POST" style="display:inline;">
-    <button type="submit" 
-            onclick="return confirm('Tem certeza que deseja excluir este jogo?')" 
-            style="color: red; cursor: pointer;">
-        Excluir
-    </button>
-</form>
+                  <a href="/admin/jogos/editar/<%= jogo.id %>" class="btn-edit">✏️ Editar</a>
+                  
+                  <a href="/jogos/deletar/<%= jogo.id %>" class="btn-delete" onclick="return confirm('Excluir este jogo?')">🗑️ Excluir</a>
                 </div>
               </td>
             </tr>
@@ -187,7 +105,40 @@
         </tbody>
       </table>
     </div>
-
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function finalizarJogo(id) {
+    Swal.fire({
+      title: 'Qual foi o resultado?',
+      input: 'select',
+      inputOptions: {
+        'TIME_CASA': 'Time da Casa Venceu',
+        'EMPATE': 'Empate',
+        'TIME_FORA': 'Time de Fora Venceu'
+      },
+      inputPlaceholder: 'Selecione...',
+      showCancelButton: true,
+      confirmButtonText: 'Confirmar e Pagar',
+      confirmButtonColor: '#10b981'
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        // Rota unificada: certifique-se que no back-end a rota seja /finalizar/:id
+        fetch(`/admin/finalizar/${id}`, { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ resultado_final: result.value })
+        })
+        .then(res => res.text())
+        .then(msg => {
+          Swal.fire('Processado!', msg, 'success').then(() => location.reload());
+        })
+        .catch(err => Swal.fire('Erro', 'Falha na conexão', 'error'));
+      }
+    });
+  }
+</script>
 </body>
 </html>

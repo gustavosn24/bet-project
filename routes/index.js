@@ -192,6 +192,7 @@ router.post('/apostar', auth, (req, res) => {
         });
     });
 });
+
 /* ===============================
    ADMIN REGISTER
 ================================ */
@@ -357,6 +358,58 @@ router.get('/jogos/deletar/:id', (req, res) => {
         
         // Redireciona de volta para a lista ou para o formulário de novo jogo
         res.redirect('/admin');
+    });
+});
+
+/* ===============================
+   FINALIZAR JOGO E PAGAR PRÊMIOS
+================================ */
+router.post('/apostar', auth, (req, res) => {
+    const { id_jogo, palpite, valor } = req.body;
+    const id_usuario = req.session.usuario.id;
+    const valorAposta = Number(valor);
+
+    // 1. Buscar a Odd correta do jogo
+    db.query('SELECT * FROM jogos WHERE id = ? AND status = "ABERTO"', [id_jogo], (err, jogos) => {
+        if (err || jogos.length === 0) return res.send("Jogo não disponível.");
+
+        const jogo = jogos[0];
+        let odd = 0;
+        if (palpite === 'TIME_CASA') odd = jogo.odd_casa;
+        else if (palpite === 'EMPATE') odd = jogo.odd_empate;
+        else if (palpite === 'TIME_FORA') odd = jogo.odd_fora;
+
+        const retornoPossivel = valorAposta * odd;
+
+        // 2. Iniciar Transação para garantir que o saldo só saia se a aposta for gravada
+        db.beginTransaction((err) => {
+            if (err) return res.send("Erro no servidor.");
+
+            // A: Deduzir saldo
+            db.query('UPDATE usuario SET saldo = saldo - ? WHERE id = ? AND saldo >= ?', [valorAposta, id_usuario, valorAposta], (err, result) => {
+                if (err || result.affectedRows === 0) {
+                    return db.rollback(() => res.send("Saldo insuficiente."));
+                }
+
+                // B: Inserir na tabela 'apostas_jogador' (conforme sua imagem)
+                const sqlInsert = `
+                    INSERT INTO apostas_jogador 
+                    (id_usuario, id_jogo, palpite, valor, odd, retorno, status, criada) 
+                    VALUES (?, ?, ?, ?, ?, ?, 'PENDENTE', NOW())
+                `;
+                
+                db.query(sqlInsert, [id_usuario, id_jogo, palpite, valorAposta, odd, retornoPossivel], (err) => {
+                    if (err) return db.rollback(() => res.send("Erro ao registrar aposta."));
+
+                    db.commit((err) => {
+                        if (err) return db.rollback(() => res.send("Erro final."));
+                        
+                        req.session.usuario.saldo -= valorAposta;
+                        res.send("✅ Sucesso! Aposta registrada na tabela apostas_jogador.");
+                    });
+                });
+            });
+        });
     });
 });
 

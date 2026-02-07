@@ -10,58 +10,75 @@ function auth(req, res, next) {
   next();
 }
 
-/* --- ROTA DE APOSTA (ALTERADA) --- */
+/* --- ROTA DE APOSTA ATUALIZADA --- */
 router.post('/apostar', auth, (req, res) => {
     let { id_jogo, palpite, valor } = req.body;
     const usuarioId = req.session.usuario.id;
     const valorAposta = parseFloat(valor);
 
-    // --- NORMALIZAÇÃO DO PALPITE ---
-    // Isso garante que se o HTML enviar "CASA", o banco receba "TIME CASA VENCEU"
-    if (palpite === "TIME CASA") palpite = "TIME CASA VENCEU";
-    if (palpite === "TIME FORA") palpite = "TIME FORA VENCEU";
-    // "EMPATE" geralmente já é igual no HTML e no Banco
-
-    // Validação
+    // Validação inicial básica
     if (!id_jogo || !palpite || isNaN(valorAposta) || valorAposta <= 0) {
         return res.status(400).send("Palpite ou valor inválido.");
     }
 
-    // 1. Verificar saldo no banco
-    db.query("SELECT saldo FROM usuario WHERE id = ?", [usuarioId], (err, results) => {
-        if (err || results.length === 0) return res.status(500).send("Erro ao verificar saldo.");
+    // 1. Buscar Saldo do Usuário E Dados do Jogo (Odds)
+    const sqlDados = `
+        SELECT u.saldo, j.odd_casa, j.odd_empate, j.odd_fora 
+        FROM usuario u, jogos j 
+        WHERE u.id = ? AND j.id = ?
+    `;
 
-        const saldoAtual = results[0].saldo;
+    db.query(sqlDados, [usuarioId, id_jogo], (err, results) => {
+        if (err || results.length === 0) return res.status(500).send("Erro ao validar dados da aposta.");
 
-        if (saldoAtual < valorAposta) {
+        const { saldo, odd_casa, odd_empate, odd_fora } = results[0];
+
+        if (saldo < valorAposta) {
             return res.send("Saldo insuficiente!");
         }
 
-        // 2. Iniciar Transação
+        // --- DEFINIÇÃO DA ODD E NORMALIZAÇÃO ---
+        let oddSelecionada = 0;
+        if (palpite === "TIME_CASA") {
+            oddSelecionada = odd_casa;
+            palpite = "TIME_CASA"; 
+        } else if (palpite === "EMPATE") {
+            oddSelecionada = odd_empate;
+            palpite = "EMPATE";
+        } else if (palpite === "TIME_FORA") {
+            oddSelecionada = odd_fora;
+            palpite = "TIME_FORA";
+        }
+
+        const retornoPotencial = (valorAposta * oddSelecionada).toFixed(2);
+
+        // 2. Iniciar Transação SQL
         db.beginTransaction((err) => {
-            if (err) return res.status(500).send("Erro ao iniciar transação.");
+            if (err) return res.status(500).send("Erro na transação.");
 
-            // A: Descontar saldo
+            // A: Descontar saldo do usuário
             db.query("UPDATE usuario SET saldo = saldo - ? WHERE id = ?", [valorAposta, usuarioId], (err) => {
-                if (err) return db.rollback(() => res.status(500).send("Erro ao processar débito."));
+                if (err) return db.rollback(() => res.status(500).send("Erro no débito."));
 
-                // B: Inserir aposta com o palpite normalizado
-                const sqlInsert = "INSERT INTO apostas_jogador (id_usuario, id_jogo, palpite, valor) VALUES (?, ?, ?, ?)";
-                db.query(sqlInsert, [usuarioId, id_jogo, palpite, valorAposta], (err) => {
-                    if (err) {
-                        console.error("Erro no INSERT:", err);
-                        return db.rollback(() => res.status(500).send("Erro ao registrar aposta no banco."));
-                    }
+                // B: Registrar a aposta com o retorno calculado
+                const sqlAposta = "INSERT INTO apostas_jogador (id_usuario, id_jogo, palpite, valor, retorno, status) VALUES (?, ?, ?, ?, ?, 'PENDENTE')";
+                db.query(sqlAposta, [usuarioId, id_jogo, palpite, valorAposta, retornoPotencial], (err) => {
+                    if (err) return db.rollback(() => res.status(500).send("Erro ao registrar aposta."));
 
-                    // C: Confirmar tudo
-                    db.commit((err) => {
-                        if (err) return db.rollback(() => res.status(500).send("Erro no commit."));
-                        
-                        // Atualiza a sessão para o front-end mostrar o saldo novo
-                        req.session.usuario.saldo = (saldoAtual - valorAposta).toFixed(2);
-                        
-                        // Redireciona de volta para o painel com sinal de sucesso
-                        res.redirect('/painel?sucesso=true');
+                    // C: Registrar na tabela de TRANSAÇÕES (para aparecer no saldo/extrato)
+                    const desc = `Aposta Realizada - Jogo ID ${id_jogo}`;
+                    const sqlTrans = "INSERT INTO transacoes (id_usuario, valor, descricao, data) VALUES (?, ?, ?, NOW())";
+                    db.query(sqlTrans, [usuarioId, -valorAposta, desc], (err) => {
+                        if (err) return db.rollback(() => res.status(500).send("Erro no histórico."));
+
+                        // D: Confirmar tudo
+                        db.commit((err) => {
+                            if (err) return db.rollback(() => res.status(500).send("Erro no commit."));
+                            
+                            // Atualiza saldo na sessão
+                            req.session.usuario.saldo = (saldo - valorAposta).toFixed(2);
+                            res.redirect('/painel?sucesso=true');
+                        });
                     });
                 });
             });
