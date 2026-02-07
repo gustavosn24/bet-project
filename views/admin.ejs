@@ -3,56 +3,110 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel do Administrador</title>
-  <link rel="stylesheet" href="/css/admin.css">
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #fff;
-      padding: 20px;
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      color: #e5e7eb;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin: 0;
+      font-size: 26px;
+    }
+
+    .btn-add {
+      background: #22c55e;
+      color: #022c22;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .btn-add:hover {
+      background: #16a34a;
+    }
+
+    .card {
+      background: #020617;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 30px;
+      margin-top: 10px;
     }
 
-    th, td {
-      border: 1px solid #334155;
-      padding: 10px;
-      text-align: center;
-    }
-
-    th {
+    thead {
       background: #1e293b;
     }
 
-    tr:nth-child(even) {
-      background: #020617;
+    th {
+      padding: 14px 10px;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #1e293b;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    tbody tr:hover {
+      background: rgba(59,130,246,0.08);
+    }
+
+    .acoes {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
     }
 
     a, button {
-      padding: 6px 10px;
-      text-decoration: none;
-      border-radius: 4px;
       border: none;
       cursor: pointer;
+      border-radius: 6px;
+      padding: 7px 12px;
+      font-size: 13px;
       color: #fff;
+      transition: opacity 0.3s, transform 0.2s;
     }
 
-    .btn-add {
-      background: #22c55e;
-      margin-bottom: 20px;
-      display: inline-block;
+    a:hover, button:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
     }
 
     .btn-edit {
       background: #3b82f6;
+      text-decoration: none;
     }
 
     .btn-delete {
@@ -62,58 +116,79 @@
     form {
       display: inline;
     }
+
+    .empty {
+      text-align: center;
+      padding: 20px;
+      color: #9ca3af;
+      font-style: italic;
+    }
   </style>
 </head>
+
 <body>
+  <div class="container">
 
-  <h1>⚙️ Painel do Administrador</h1>
+    <div class="header">
+      <h1>⚙️ Painel do Administrador</h1>
+      <a href="/admin/jogos/novo" class="btn-add">➕ Novo Jogo</a>
+    </div>
 
-  <a href="/admin/jogos/novo" class="btn-add">➕ Adicionar Jogo</a>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Time Casa</th>
+            <th>Time Fora</th>
+            <th>Data</th>
+            <th>Odd Casa</th>
+            <th>Odd Empate</th>
+            <th>Odd Fora</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Time Casa</th>
-        <th>Time Fora</th>
-        <th>Data</th>
-        <th>Odds Casa</th>
-        <th>Odds Empate</th>
-        <th>Odds Fora</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
+        <tbody>
+          <% if (jogos.length === 0) { %>
+            <tr>
+              <td colspan="8" class="empty">
+                Nenhum jogo cadastrado
+              </td>
+            </tr>
+          <% } %>
 
-    <tbody>
-      <% if (jogos.length === 0) { %>
-        <tr>
-          <td colspan="8">Nenhum jogo cadastrado</td>
-        </tr>
-      <% } %>
+          <% jogos.forEach(jogo => { %>
+            <tr>
+              <td><%= jogo.id %></td>
+              <td><%= jogo.time_casa %></td>
+              <td><%= jogo.time_fora %></td>
+              <td><%= jogo.data_jogo %></td>
+              <td><%= jogo.odd_casa %></td>
+              <td><%= jogo.odd_empate %></td>
+              <td><%= jogo.odd_fora %></td>
+              <td>
+                <div class="acoes">
+                  <a href="/admin/jogos/editar/<%= jogo.id %>" class="btn-edit">
+                    ✏️ Editar
+                  </a>
 
-      <% jogos.forEach(jogo => { %>
-        <tr>
-          <td><%= jogo.id %></td>
-          <td><%= jogo.time_casa %></td>
-          <td><%= jogo.time_fora %></td>
-          <td><%= jogo.data_jogo %></td>
-          <td><%= jogo.odd_casa %></td>
-          <td><%= jogo.odd_empate %></td>
-          <td><%= jogo.odd_fora %></td>
-          <td>
-            <a href="/admin/jogos/editar/<%= jogo.id %>" class="btn-edit">✏️ Editar</a>
+                  <form action="/admin/jogos/deletar/<%= jogo.id %>" method="POST">
+                    <button
+                      type="submit"
+                      class="btn-delete"
+                      onclick="return confirm('Deseja realmente excluir este jogo?')">
+                      🗑️
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
 
-            <form action="/admin/jogos/deletar/<%= jogo.id %>" method="POST">
-              <button type="submit" class="btn-delete"
-                onclick="return confirm('Deseja realmente excluir este jogo?')">
-                🗑️ Deletar
-              </button>
-            </form>
-          </td>
-        </tr>
-      <% }) %>
-    </tbody>
-  </table>
-
+  </div>
 </body>
 </html>

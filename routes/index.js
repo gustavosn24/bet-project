@@ -13,7 +13,7 @@ router.post('/register', (req, res) => {
   const { cpf, nome, email, senha } = req.body;
 
   const checkSql = `
-    SELECT id FROM usuarios
+    SELECT id FROM usuario
     WHERE email = ? OR cpf = ?
   `;
 
@@ -27,7 +27,7 @@ router.post('/register', (req, res) => {
     }
 
     const insertSql = `
-      INSERT INTO usuarios (cpf, nome, email, senha, saldo)
+      INSERT INTO usuario (cpf, nome, email, senha, saldo)
       VALUES (?, ?, ?, ?, 100)
     `;
 
@@ -50,7 +50,7 @@ router.post('/login', (req, res) => {
 
   const sql = `
     SELECT id, nome, saldo
-    FROM usuarios
+    FROM usuario
     WHERE email = ? AND senha = ?
   `;
 
@@ -131,7 +131,7 @@ router.post('/apostar', auth, (req, res) => {
       const jogo = jogos[0];
 
       db.query(
-        'SELECT saldo FROM usuarios WHERE id = ?',
+        'SELECT saldo FROM usuario WHERE id = ?',
         [id_usuario],
         (err, users) => {
           if (users[0].saldo < valor) {
@@ -139,9 +139,10 @@ router.post('/apostar', auth, (req, res) => {
           }
 
           let odd;
-          if (palpite === 'CASA') odd = jogo.odd_casa;
+          if (palpite === 'TIME_CASA') odd = jogo.odd_casa;
           else if (palpite === 'EMPATE') odd = jogo.odd_empate;
-          else odd = jogo.odd_fora;
+          else if (palpite === 'TIME_FORA') odd = jogo.odd_fora;
+          else return res.send('Palpite inválido');
 
           const retorno = valor * odd;
 
@@ -161,7 +162,7 @@ router.post('/apostar', auth, (req, res) => {
               );
 
               db.query(
-                'UPDATE usuarios SET saldo = saldo - ? WHERE id = ?',
+                'UPDATE usuario SET saldo = saldo - ? WHERE id = ?',
                 [valor, id_usuario]
               );
 
@@ -176,7 +177,7 @@ router.post('/apostar', auth, (req, res) => {
 });
 
 /* ===============================
-   REGISTER ADMIN
+   ADMIN REGISTER
 ================================ */
 router.get('/admin/register', (req, res) => {
   res.render('admin-register', { erro: null });
@@ -204,17 +205,12 @@ router.post('/admin/register', (req, res) => {
       VALUES (?, ?, ?, ?)
     `;
 
-    db.query(
-      insertSql,
-      [cpf, nome, email, senha], // senha em texto puro (igual usuário)
-      err => {
-        if (err) return res.send(err);
-        res.redirect('/admin/login');
-      }
-    );
+    db.query(insertSql, [cpf, nome, email, senha], err => {
+      if (err) return res.send(err);
+      res.redirect('/admin/login');
+    });
   });
 });
-
 
 /* ===============================
    MIDDLEWARE ADMIN
@@ -327,102 +323,6 @@ router.post('/admin/novo-jogo', authAdmin, (req, res, next) => {
     if (err) return next(err);
     res.redirect('/admin');
   });
-});
-
-/* ===============================
-   EDITAR JOGO (APENAS ABERTO)
-================================ */
-router.get('/admin/editar-jogo/:id', authAdmin, (req, res, next) => {
-  const id = req.params.id;
-
-  db.query(
-    'SELECT * FROM jogos WHERE id = ? AND status = "ABERTO"',
-    [id],
-    (err, jogos) => {
-      if (err) return next(err);
-
-      if (jogos.length === 0) {
-        return res.send('❌ Apenas jogos ABERTOS podem ser editados');
-      }
-
-      db.query('SELECT * FROM categorias_jogos', (err, categorias) => {
-        if (err) return next(err);
-
-        res.render('editar-jogo', {
-          jogo: jogos[0],
-          categorias
-        });
-      });
-    }
-  );
-});
-
-router.post('/admin/editar-jogo/:id', authAdmin, (req, res, next) => {
-  const id = req.params.id;
-
-  const {
-    id_categoria,
-    time_casa,
-    time_fora,
-    data_jogo,
-    odd_casa,
-    odd_empate,
-    odd_fora
-  } = req.body;
-
-  const sql = `
-    UPDATE jogos SET
-      id_categoria = ?,
-      time_casa = ?,
-      time_fora = ?,
-      data_jogo = ?,
-      odd_casa = ?,
-      odd_empate = ?,
-      odd_fora = ?
-    WHERE id = ? AND status = 'ABERTO'
-  `;
-
-  db.query(sql, [
-    id_categoria,
-    time_casa,
-    time_fora,
-    data_jogo,
-    odd_casa,
-    odd_empate,
-    odd_fora,
-    id
-  ], err => {
-    if (err) return next(err);
-    res.redirect('/admin');
-  });
-});
-
-/* ===============================
-   EXCLUIR JOGO (SEM APOSTAS)
-================================ */
-router.get('/admin/excluir-jogo/:id', authAdmin, (req, res, next) => {
-  const id = req.params.id;
-
-  db.query(
-    'SELECT COUNT(*) AS total FROM jogos_aposta WHERE id_jogo = ?',
-    [id],
-    (err, result) => {
-      if (err) return next(err);
-
-      if (result[0].total > 0) {
-        return res.send('❌ Não é possível excluir um jogo com apostas');
-      }
-
-      db.query(
-        'DELETE FROM jogos WHERE id = ?',
-        [id],
-        err => {
-          if (err) return next(err);
-          res.redirect('/admin');
-        }
-      );
-    }
-  );
 });
 
 module.exports = router;

@@ -1,36 +1,141 @@
-<h2>Criar Conta</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Criar Conta - Admin</title>
 
-<% if (erro) { %>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-  <p style="color:red;"><%= erro %></p>
-<% } %>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-<form action="/admin/register" method="POST">
-  <div>
-    <label>CPF</label><br>
-    <input type="text" name="cpf" required>
+    .container {
+      width: 360px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .form-card {
+      background: #020617;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-size: 13px;
+      color: #cbd5f5;
+      text-align: left;
+      margin-bottom: 4px;
+    }
+
+    .form-card input {
+      margin-bottom: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .form-card input::placeholder {
+      color: #64748b;
+    }
+
+    .form-card input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .form-card button {
+      padding: 12px;
+      margin-top: 5px;
+      background: #22c55e;
+      color: #022c22;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .form-card button:hover {
+      background: #16a34a;
+    }
+
+    .erro {
+      background: rgba(239,68,68,0.2);
+      color: #fecaca;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+
+    .link {
+      margin-top: 15px;
+      color: #cbd5f5;
+      font-size: 14px;
+    }
+
+    .link a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>👤 Criar Conta Admin</h2>
+
+    <% if (erro) { %>
+      <div class="erro"><%= erro %></div>
+    <% } %>
+
+    <form action="/admin/register" method="POST" class="form-card">
+      <label>CPF</label>
+      <input type="text" name="cpf" placeholder="Digite o CPF" required>
+
+      <label>Nome</label>
+      <input type="text" name="nome" placeholder="Nome completo" required>
+
+      <label>Email</label>
+      <input type="email" name="email" placeholder="Email" required>
+
+      <label>Senha</label>
+      <input type="password" name="senha" placeholder="Senha" required>
+
+      <button type="submit">Registrar</button>
+    </form>
+
+    <p class="link">
+      Já tem conta?
+      <a href="/admin/login">Entrar</a>
+    </p>
   </div>
-
-  <div>
-    <label>Nome</label><br>
-    <input type="text" name="nome" required>
-  </div>
-
-  <div>
-    <label>Email</label><br>
-    <input type="email" name="email" required>
-  </div>
-
-  <div>
-    <label>Senha</label><br>
-    <input type="password" name="senha" required>
-  </div>
-
-<button type="submit">Registrar</button>
-
-</form>
-
-<p>
-  Já tem conta?
-  <a href="/admin/login">Entrar</a>
-</p>
+</body>
+</html>

@@ -1,11 +1,102 @@
-<h2>Login</h2>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Admin</title>
 
-<form method="POST" action="/admin/login">
-  <input type="email" name="email" placeholder="Email" required>
-  <input type="password" name="senha" placeholder="Senha" required>
-  <button>Entrar</button>
-</form>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-<% if (erro) { %>
-  <p style="color:red;"><%= erro %></p>
-<% } %>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #020617, #0f172a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      width: 340px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .form-card {
+      background: #020617;
+      padding: 30px;
+      border-radius: 14px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-card input {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background: #020617;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .form-card input::placeholder {
+      color: #64748b;
+    }
+
+    .form-card input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .form-card button {
+      padding: 12px;
+      background: #3b82f6;
+      color: #020617;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .form-card button:hover {
+      background: #2563eb;
+    }
+
+    .erro {
+      background: rgba(239,68,68,0.2);
+      color: #fecaca;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>🔐 Login Admin</h2>
+
+    <form method="POST" action="/admin/login" class="form-card">
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Entrar</button>
+    </form>
+
+    <% if (erro) { %>
+      <div class="erro"><%= erro %></div>
+    <% } %>
+  </div>
+</body>
+</html>

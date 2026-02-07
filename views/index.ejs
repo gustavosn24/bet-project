@@ -1,39 +1,106 @@
-<% if (usuario) { %>
-  Olá, <%= usuario.nome %> |
-  Saldo: R$ <%= usuario.saldo %>
-  <a href="/logout">Sair</a>
-<% } %>
-<h1>Lista de Jogos</h1>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro</title>
 
-<table border="1">
-  <tr>
-    <th>Categoria</th>
-    <th>Time Casa</th>
-    <th>Time Fora</th>
-    <th>Data</th>
-    <th>Odd Casa</th>
-    <th>Odd Empate</th>
-    <th>Odd Fora</th>
-    <th>Status</th>
-    <th>Resultado</th>
-    <th>Ações</th>
-  </tr>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-  <% jogos.forEach(jogo => { %>
-    <tr>
-      <td><%= jogo.categoria %></td>
-      <td><%= jogo.time_casa %></td>
-      <td><%= jogo.time_fora %></td>
-      <td><%= jogo.data_jogo %></td>
-      <td><%= jogo.odd_casa %></td>
-      <td><%= jogo.odd_empate %></td>
-      <td><%= jogo.odd_fora %></td>
-      <td><%= jogo.status %></td>
-            <td><%= jogo.resultado || '-' %></td>
-      <td>
-        <a href="/editar-jogo/<%= jogo.id %>">Editar</a>
-        <a href="/excluir-jogo/<%= jogo.id %>" onclick="return confirm('Tem certeza que deseja deletar este jogo?');"> Deletar</a>
-      </td>
-    </tr>
-  <% }) %>
-</table>
+    .container {
+      width: 340px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .form {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form input {
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .form input:focus {
+      outline: none;
+      border-color: #2a5298;
+    }
+
+    .form button {
+      padding: 12px;
+      background: #2a5298;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .form button:hover {
+      background: #1e3c72;
+    }
+
+    .erro {
+      margin-top: 15px;
+      color: #fff;
+      background: rgba(255, 0, 0, 0.25);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .sucesso {
+      margin-top: 15px;
+      color: #fff;
+      background: rgba(0, 180, 0, 0.35);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Cadastro</h2>
+
+    <form method="POST" action="/cadastro" class="form">
+      <input type="text" name="nome" placeholder="Nome completo" required>
+      <input type="email" name="email" placeholder="Email" required>
+      <input type="text" name="cpf" placeholder="CPF" required>
+      <input type="password" name="senha" placeholder="Senha" required>
+      <button type="submit">Cadastrar</button>
+    </form>
+
+    <% if (erro) { %>
+      <p class="erro"><%= erro %></p>
+    <% } %>
+
+    <% if (sucesso) { %>
+      <p class="sucesso"><%= sucesso %></p>
+    <% } %>
+  </div>
+</body>
+</html>

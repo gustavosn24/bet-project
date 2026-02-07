@@ -1,51 +1,217 @@
-<h2>Bem-vindo, <%= usuario.nome %></h2>
-<p>Saldo disponível: <strong>R$ <%= usuario.saldo %></strong></p>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Usuário</title>
 
-<hr>
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      padding: 30px;
+      box-sizing: border-box;
+    }
 
-<h3>Jogos disponíveis para aposta</h3>
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
 
-<% if (jogos.length === 0) { %>
+    .header {
+      background: #fff;
+      padding: 20px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      margin-bottom: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-  <p>Nenhum jogo disponível no momento.</p>
-<% } %>
+    .header h2 {
+      margin: 0;
+      color: #333;
+    }
 
-<% jogos.forEach(jogo => { %>
+    .saldo {
+      font-size: 16px;
+      background: #2a5298;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
 
-  <div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
-    <p><strong><%= jogo.categoria %></strong></p>
-    <p>
-      <%= jogo.time_casa %> x <%= jogo.time_fora %><br>
-      Data: <%= jogo.data_jogo %>
-    </p>
+    .logout {
+      margin-left: 15px;
+      color: #fff;
+      text-decoration: none;
+      background: #b00020;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
 
-```
-<form action="/apostar" method="POST">
-  <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
+    h3 {
+      color: #fff;
+      margin-bottom: 15px;
+    }
 
-  <label>
-    <input type="radio" name="palpite" value="CASA" required>
-    <%= jogo.time_casa %> (Odd: <%= jogo.odd_casa %>)
-  </label><br>
+    .jogo {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
 
-  <label>
-    <input type="radio" name="palpite" value="EMPATE">
-    Empate (Odd: <%= jogo.odd_empate %>)
-  </label><br>
+    .jogo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-  <label>
-    <input type="radio" name="palpite" value="FORA">
-    <%= jogo.time_fora %> (Odd: <%= jogo.odd_fora %>)
-  </label><br><br>
+    .categoria {
+      font-weight: bold;
+      color: #2a5298;
+    }
 
-  <input type="number" name="valor" placeholder="Valor da aposta" min="1" required>
+    .data {
+      font-size: 13px;
+      color: #777;
+    }
 
-  <br><br>
-  <button type="submit">Apostar</button>
-</form>
-```
+    .times {
+      font-size: 18px;
+      margin: 10px 0;
+      font-weight: bold;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    form input[type="radio"] {
+      margin-right: 6px;
+    }
+
+    .apostar-area {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    form input[type="number"] {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 160px;
+      font-size: 14px;
+    }
+
+    form input:focus {
+      outline: none;
+      border-color: #2a5298;
+    }
+
+    form button {
+      padding: 11px 18px;
+      background: #2a5298;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    form button:hover {
+      background: #1e3c72;
+    }
+
+    .sem-jogos {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="header">
+      <h2>Bem-vindo, <%= usuario.nome %></h2>
+
+      <div>
+        <span class="saldo">
+          Saldo: R$ <%= usuario.saldo %>
+        </span>
+        <a href="/logout" class="logout">Sair</a>
+      </div>
+    </div>
+
+    <h3>Jogos disponíveis para aposta</h3>
+
+    <% if (jogos.length === 0) { %>
+      <div class="sem-jogos">
+        Nenhum jogo disponível no momento.
+      </div>
+    <% } %>
+
+    <% jogos.forEach(jogo => { %>
+      <div class="jogo">
+        <div class="jogo-header">
+          <span class="categoria"><%= jogo.categoria %></span>
+          <span class="data"><%= jogo.data_jogo %></span>
+        </div>
+
+        <div class="times">
+          <%= jogo.time_casa %> x <%= jogo.time_fora %>
+        </div>
+
+        <form action="/apostar" method="POST">
+          <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
+
+          <label>
+            <input type="radio" name="palpite" value="CASA" required>
+            <%= jogo.time_casa %> (Odd: <%= jogo.odd_casa %>)
+          </label>
+
+          <label>
+            <input type="radio" name="palpite" value="EMPATE">
+            Empate (Odd: <%= jogo.odd_empate %>)
+          </label>
+
+          <label>
+            <input type="radio" name="palpite" value="FORA">
+            <%= jogo.time_fora %> (Odd: <%= jogo.odd_fora %>)
+          </label>
+
+          <div class="apostar-area">
+            <input
+              type="number"
+              name="valor"
+              placeholder="Valor da aposta"
+              min="1"
+              required
+            >
+            <button type="submit">Apostar</button>
+          </div>
+        </form>
+      </div>
+    <% }) %>
 
   </div>
-<% }) %>
-
-<a href="/logout">Sair</a>
+</body>
+</html>

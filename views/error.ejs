@@ -1,3 +1,78 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Erro</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: linear-gradient(135deg, #8e0e00, #1f1c18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .error-container {
+      width: 90%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #b00020;
+      margin-bottom: 10px;
+      font-size: 26px;
+    }
+
+    h2 {
+      color: #555;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    pre {
+      background: #111;
+      color: #00ff9c;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: right;
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #b00020;
+      font-weight: bold;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="error-container">
+    <h1>❌ <%= message %></h1>
+    <h2>Código do erro: <%= error.status %></h2>
+
+    <pre><%= error.stack %></pre>
+
+    <div class="footer">
+      <a href="/">Voltar para o início</a>
+    </div>
+  </div>
+</body>
+</html>
