@@ -117,65 +117,81 @@ router.get('/apostar', auth, (req, res, next) => {
    APOSTAR
 ================================ */
 router.post('/apostar', auth, (req, res) => {
-  const { id_jogo, palpite, valor } = req.body;
-  const id_usuario = req.session.usuario.id;
+    const { id_jogo, palpite, valor } = req.body;
+    const id_usuario = req.session.usuario.id;
+    const valorAposta = Number(valor);
 
-  db.query(
-    'SELECT * FROM jogos WHERE id = ? AND status = "ABERTO"',
-    [id_jogo],
-    (err, jogos) => {
-      if (err || jogos.length === 0) {
-        return res.send('Jogo inválido');
-      }
-
-      const jogo = jogos[0];
-
-      db.query(
-        'SELECT saldo FROM usuario WHERE id = ?',
-        [id_usuario],
-        (err, users) => {
-          if (users[0].saldo < valor) {
-            return res.send('Saldo insuficiente');
-          }
-
-          let odd;
-          if (palpite === 'TIME_CASA') odd = jogo.odd_casa;
-          else if (palpite === 'EMPATE') odd = jogo.odd_empate;
-          else if (palpite === 'TIME_FORA') odd = jogo.odd_fora;
-          else return res.send('Palpite inválido');
-
-          const retorno = valor * odd;
-
-          db.query(
-            `INSERT INTO aposta
-             (id_usuario, valor, palpite, odd, retorno, status, criada)
-             VALUES (?, ?, ?, ?, ?, 'PENDENTE', NOW())`,
-            [id_usuario, valor, palpite, odd, retorno],
-            (err, result) => {
-              if (err) return res.send(err);
-
-              const id_aposta = result.insertId;
-
-              db.query(
-                'INSERT INTO jogos_aposta (id_aposta, id_jogo) VALUES (?, ?)',
-                [id_aposta, id_jogo]
-              );
-
-              db.query(
-                'UPDATE usuario SET saldo = saldo - ? WHERE id = ?',
-                [valor, id_usuario]
-              );
-
-              req.session.usuario.saldo -= Number(valor);
-              res.redirect('/apostar');
-            }
-          );
-        }
-      );
+    if (!id_jogo || isNaN(valorAposta) || valorAposta <= 0) {
+        return res.status(400).send('Dados de aposta inválidos.');
     }
-  );
-});
 
+    // --- NOVA TRAVA: VERIFICAR SE O USUÁRIO JÁ APOSTOU NESTE JOGO ---
+    const checkDupSql = `
+        SELECT a.id 
+        FROM aposta a
+        INNER JOIN jogos_aposta ja ON a.id = ja.id_aposta
+        WHERE a.id_usuario = ? AND ja.id_jogo = ?
+    `;
+
+    db.query(checkDupSql, [id_usuario, id_jogo], (err, dupRows) => {
+        if (err) return res.send('Erro ao verificar histórico de apostas.');
+        
+        if (dupRows.length > 0) {
+            return res.send('Você já realizou um palpite para este jogo. Apenas um palpite é permitido.');
+        }
+
+        // --- CONTINUAÇÃO DA LÓGICA DE APOSTA ---
+        db.query('SELECT * FROM jogos WHERE id = ? AND status = "ABERTO"', [id_jogo], (err, jogos) => {
+            if (err || jogos.length === 0) return res.send('Jogo não disponível ou encerrado.');
+
+            const jogo = jogos[0];
+            let odd;
+
+            if (palpite === 'TIME_CASA') odd = jogo.odd_casa;
+            else if (palpite === 'EMPATE') odd = jogo.odd_empate;
+            else if (palpite === 'TIME_FORA') odd = jogo.odd_fora;
+            else return res.send('Palpite inválido.');
+
+            const retornoPossivel = valorAposta * odd;
+
+            db.beginTransaction((err) => {
+                if (err) return res.send('Erro ao processar sistema.');
+
+                // Descontar saldo
+                db.query('UPDATE usuario SET saldo = saldo - ? WHERE id = ? AND saldo >= ?', 
+                [valorAposta, id_usuario, valorAposta], (err, result) => {
+                    
+                    if (err || result.affectedRows === 0) {
+                        return db.rollback(() => res.send('Saldo insuficiente.'));
+                    }
+
+                    // Gravar Aposta
+                    db.query(`INSERT INTO aposta (id_usuario, valor, palpite, odd, retorno, status, criada) 
+                               VALUES (?, ?, ?, ?, ?, 'PENDENTE', NOW())`,
+                    [id_usuario, valorAposta, palpite, odd, retornoPossivel], (err, resAposta) => {
+                        
+                        if (err) return db.rollback(() => res.send('Erro ao gravar aposta.'));
+                        const id_new_aposta = resAposta.insertId;
+
+                        // Vincular Jogo
+                        db.query('INSERT INTO jogos_aposta (id_aposta, id_jogo) VALUES (?, ?)', 
+                        [id_new_aposta, id_jogo], (err) => {
+                            
+                            if (err) return db.rollback(() => res.send('Erro ao vincular jogo.'));
+
+                            db.commit((err) => {
+                                if (err) return db.rollback(() => res.send('Erro no commit.'));
+                                
+                                req.session.usuario.saldo -= valorAposta;
+                                res.redirect('/apostar?sucesso=1');
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
 /* ===============================
    ADMIN REGISTER
 ================================ */
@@ -340,7 +356,7 @@ router.get('/jogos/deletar/:id', (req, res) => {
         console.log(`✅ Jogo com ID ${id} foi excluído com sucesso.`);
         
         // Redireciona de volta para a lista ou para o formulário de novo jogo
-        res.redirect('/admin/jogos/novo');
+        res.redirect('/admin');
     });
 });
 

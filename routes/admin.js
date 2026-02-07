@@ -25,7 +25,7 @@ router.post('/jogos/novo', (req, res) => {
 
     db.query(sql, [id_categoria, time_casa, time_fora, data_jogo, odd_casa, odd_empate, odd_fora], (err, result) => {
         if (err) return res.status(500).send('Erro ao salvar jogo');
-        res.redirect('/admin/jogos/novo');
+        res.redirect('/admin');
     });
 });
 
@@ -84,7 +84,7 @@ router.post('/jogos/editar/:id', (req, res) => {
         }
 
         console.log(`✅ Sucesso: ${result.affectedRows} linha(s) alterada(s).`);
-        res.redirect('/admin/jogos/novo'); 
+        res.redirect('/admin'); 
     });
 });
 
@@ -100,7 +100,7 @@ router.post('/jogos/excluir/:id', (req, res) => {
         }
 
         console.log(`🗑️ Jogo ${id} excluído com sucesso.`);
-        res.redirect('/admin/jogos/novo'); // Ou para a sua listagem de jogos
+        res.redirect('/admin'); // Ou para a sua listagem de jogos
     });
 });
 
