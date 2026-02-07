@@ -1,217 +1,301 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
-  <title>Painel do Usuário</title>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Apostas</title>
   <style>
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       background: linear-gradient(135deg, #1e3c72, #2a5298);
-      padding: 30px;
+      padding: 20px;
       box-sizing: border-box;
+      color: #333;
     }
 
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: auto;
     }
 
+    /* Cabeçalho mais moderno */
     .header {
-      background: #fff;
-      padding: 20px 25px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      margin-bottom: 25px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 15px 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      margin-bottom: 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      backdrop-filter: blur(4px);
     }
 
     .header h2 {
       margin: 0;
-      color: #333;
+      font-size: 20px;
+      color: #1e3c72;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
     }
 
     .saldo {
-      font-size: 16px;
-      background: #2a5298;
+      background: #27ae60;
       color: #fff;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 15px;
+      border-radius: 50px;
       font-weight: bold;
+      box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
     }
 
     .logout {
-      margin-left: 15px;
       color: #fff;
       text-decoration: none;
-      background: #b00020;
-      padding: 10px 14px;
+      background: #e74c3c;
+      padding: 8px 15px;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 13px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .logout:hover {
+      background: #c0392b;
+      transform: translateY(-2px);
     }
 
     h3 {
       color: #fff;
-      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 18px;
+      margin-bottom: 20px;
+      text-align: center;
     }
 
+    /* Card de Jogo Estilizado */
     .jogo {
       background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .jogo:hover {
+      transform: scale(1.01);
     }
 
     .jogo-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
     }
 
     .categoria {
-      font-weight: bold;
+      font-weight: 800;
       color: #2a5298;
+      text-transform: uppercase;
+      font-size: 12px;
     }
 
     .data {
-      font-size: 13px;
-      color: #777;
+      font-size: 12px;
+      color: #888;
     }
 
     .times {
-      font-size: 18px;
-      margin: 10px 0;
-      font-weight: bold;
-      color: #333;
+      font-size: 22px;
+      text-align: center;
+      margin: 15px 0;
+      font-weight: 900;
+      color: #222;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
     }
 
-    form label {
-      display: block;
-      margin-bottom: 8px;
+    .vs {
+      color: #e74c3c;
+      font-style: italic;
+      font-size: 16px;
+    }
+
+    /* Opções de Aposta em Grid */
+    .opcoes-aposta {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .opcao-label {
+      border: 2px solid #f0f0f0;
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
       cursor: pointer;
-      font-size: 14px;
+      transition: 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
     }
 
-    form input[type="radio"] {
-      margin-right: 6px;
+    .opcao-label:hover {
+      border-color: #2a5298;
+      background: #f9f9fb;
+    }
+
+    /* Esconde o radio original e destaca o selecionado via JS ou CSS */
+    .opcao-label input {
+      margin-bottom: 8px;
+    }
+
+    .odd-val {
+      font-weight: bold;
+      color: #27ae60;
+      font-size: 16px;
     }
 
     .apostar-area {
       display: flex;
+      flex-direction: column;
       gap: 10px;
-      margin-top: 10px;
-      align-items: center;
+      border-top: 1px solid #eee;
+      padding-top: 15px;
     }
 
     form input[type="number"] {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      width: 160px;
-      font-size: 14px;
-    }
-
-    form input:focus {
-      outline: none;
-      border-color: #2a5298;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #eee;
+      font-size: 15px;
+      text-align: center;
     }
 
     form button {
-      padding: 11px 18px;
+      padding: 14px;
       background: #2a5298;
       color: #fff;
       border: none;
       border-radius: 8px;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      transition: 0.3s;
     }
 
     form button:hover {
       background: #1e3c72;
+      box-shadow: 0 5px 15px rgba(30, 60, 114, 0.4);
     }
 
     .sem-jogos {
       background: #fff;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 40px;
+      border-radius: 15px;
       text-align: center;
-      color: #555;
+      color: #777;
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
+
   <div class="container">
-
     <div class="header">
-      <h2>Bem-vindo, <%= usuario.nome %></h2>
-
-      <div>
-        <span class="saldo">
-          Saldo: R$ <%= usuario.saldo %>
-        </span>
+      <h2>Olá, <%= usuario.nome %>
+      </h2>
+      <div class="user-info">
+        <span class="saldo">R$ <%= usuario.saldo %></span>
         <a href="/logout" class="logout">Sair</a>
       </div>
     </div>
 
-    <h3>Jogos disponíveis para aposta</h3>
+    <h3>🔥 Jogos em Destaque</h3>
 
-    <% if (jogos.length === 0) { %>
-      <div class="sem-jogos">
-        Nenhum jogo disponível no momento.
-      </div>
-    <% } %>
+    <% if (jogos.length===0) { %>
+      <div class="sem-jogos">🏟️ No momento não há jogos abertos para apostas.</div>
+      <% } %>
 
-    <% jogos.forEach(jogo => { %>
-      <div class="jogo">
-        <div class="jogo-header">
-          <span class="categoria"><%= jogo.categoria %></span>
-          <span class="data"><%= jogo.data_jogo %></span>
-        </div>
+        <% jogos.forEach(jogo=> { %>
+          <div class="jogo">
+            <div class="jogo-header">
+              <span class="categoria">⚽ <%= jogo.categoria %></span>
+              <span class="data">📅 <%= jogo.data_jogo %></span>
+            </div>
 
-        <div class="times">
-          <%= jogo.time_casa %> x <%= jogo.time_fora %>
-        </div>
+            <div class="times">
+              <span>
+                <%= jogo.time_casa %>
+              </span>
+              <span class="vs">VS</span>
+              <span>
+                <%= jogo.time_fora %>
+              </span>
+            </div>
 
-        <form action="/apostar" method="POST">
-          <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
+            <form action="/apostar" method="POST">
+              <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
 
-          <label>
-            <input type="radio" name="palpite" value="CASA" required>
-            <%= jogo.time_casa %> (Odd: <%= jogo.odd_casa %>)
-          </label>
+              <div class="opcoes-aposta">
+                <label class="opcao-label">
+                  <input type="radio" name="palpite" value="TIME CASA VENCEU" required>
+                  <span>
+                    <%= jogo.time_casa %>
+                  </span>
+                  <span class="odd-val">
+                    <%= jogo.odd_casa %>
+                  </span>
+                </label>
 
-          <label>
-            <input type="radio" name="palpite" value="EMPATE">
-            Empate (Odd: <%= jogo.odd_empate %>)
-          </label>
+                <label class="opcao-label">
+                  <input type="radio" name="palpite" value="EMPATE">
+                  <span>Empate</span>
+                  <span class="odd-val">
+                    <%= jogo.odd_empate %>
+                  </span>
+                </label>
 
-          <label>
-            <input type="radio" name="palpite" value="FORA">
-            <%= jogo.time_fora %> (Odd: <%= jogo.odd_fora %>)
-          </label>
+                <label class="opcao-label">
+                  <input type="radio" name="palpite" value="TIME FORA VENCEU">
+                  <span>
+                    <%= jogo.time_fora %>
+                  </span>
+                  <span class="odd-val">
+                    <%= jogo.odd_fora %>
+                  </span>
+                </label>
+              </div>
 
-          <div class="apostar-area">
-            <input
-              type="number"
-              name="valor"
-              placeholder="Valor da aposta"
-              min="1"
-              required
-            >
-            <button type="submit">Apostar</button>
+              <div class="apostar-area">
+                <input type="number" name="valor" placeholder="Quanto deseja apostar? (R$)" min="1" step="0.01"
+                  required>
+                <button type="submit">Confirmar Aposta</button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    <% }) %>
-
+          <% }) %>
+            <% if (typeof sucesso !=='undefined' ) { %>
+              <div
+                style="background: #27ae60; color: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
+                ✅ Aposta registrada com sucesso! Boa sorte.
+              </div>
+              <% } %>
   </div>
+
 </body>
+
 </html>
