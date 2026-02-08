@@ -91,6 +91,10 @@
       box-shadow: 0 15px 35px rgba(34,197,94,0.55);
     }
 
+    button:disabled {
+      cursor: not-allowed;
+    }
+
     .back {
       display: block;
       margin-top: 18px;
@@ -103,6 +107,46 @@
     .back:hover {
       color: #e5e7eb;
     }
+
+    /* Overlay de loading */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #020617, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Spinner mais lento */
+    .spinner {
+      width: 70px;
+      height: 70px;
+      border: 6px solid rgba(148,163,184,0.2);
+      border-top: 6px solid #22c55e;
+      border-radius: 50%;
+      animation: spin 6s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 18px;
+      font-size: 15px;
+      color: #94a3b8;
+      letter-spacing: 1px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
@@ -111,7 +155,8 @@
   <div class="card">
     <h2>➕ Cadastrar Novo Jogo</h2>
 
-    <form action="/admin/jogos/novo" method="POST">
+    <form action="/admin/novo-jogo" method="POST" onsubmit="return mostrarLoading()">
+
 
       <div class="field">
         <label>Categoria</label>
@@ -159,11 +204,38 @@
         </div>
       </div>
 
-      <button type="submit">Cadastrar Jogo</button>
+      <button type="submit" id="btnCadastrar">Cadastrar Jogo</button>
 
       <a href="/admin" class="back">← Voltar para o painel</a>
     </form>
   </div>
+
+  <div class="loading-overlay" id="loading">
+    <div style="text-align:center">
+      <div class="spinner"></div>
+      <div class="loading-text">Salvando jogo...</div>
+    </div>
+  </div>
+
+  <script>
+  function mostrarLoading() {
+    const loading = document.getElementById('loading');
+    const btn = document.getElementById('btnCadastrar');
+
+    loading.classList.add('active');
+    btn.innerText = 'Salvando...';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+
+    // ⏳ tempo mínimo da animação (3 segundos)
+    setTimeout(() => {
+      document.forms[0].submit();
+    }, 3000);
+
+    return false; // impede envio imediato
+  }
+</script>
+
 
 </body>
 </html>
