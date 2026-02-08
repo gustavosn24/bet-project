@@ -105,45 +105,76 @@ router.post('/finalizar/:id', authAdmin, (req, res) => {
     const id_jogo = req.params.id;
     const { resultado_final } = req.body;
 
-    // 1. Atualiza o status do jogo e o resultado oficial
-    db.query('UPDATE jogos SET status = "FINALIZADO", resultado = ? WHERE id = ?', [resultado_final, id_jogo], (err) => {
-        if (err) return res.status(500).send("Erro ao fechar jogo.");
+    // 1. Finaliza o jogo
+    db.query(
+        'UPDATE jogos SET status = "FINALIZADO", resultado = ? WHERE id = ?',
+        [resultado_final, id_jogo],
+        (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Erro ao finalizar jogo.");
+            }
 
-        // 2. Busca apostas PENDENTES para este jogo
-        db.query('SELECT * FROM apostas_jogador WHERE id_jogo = ? AND status = "PENDENTE"', [id_jogo], (err, apostas) => {
-            if (err) return res.status(500).send("Erro ao buscar apostas.");
+            // 2. Busca apostas PENDENTES do jogo
+            db.query(
+                `SELECT a.*
+                 FROM aposta a
+                 INNER JOIN jogos_aposta ja ON ja.id_aposta = a.id
+                 WHERE ja.id_jogo = ? AND a.status = 'PENDENTE'`,
+                [id_jogo],
+                (err, apostas) => {
+                    if (err) {
+                        console.error(err);
+                        return res.status(500).send("Erro ao buscar apostas.");
+                    }
 
-            if (apostas.length === 0) return res.send("Jogo encerrado. Nenhuma aposta pendente.");
+                    if (apostas.length === 0) {
+                        return res.send("Jogo encerrado. Nenhuma aposta pendente.");
+                    }
 
-            // 3. Processa cada palpite e gera o histórico em 'transacoes'
-            apostas.forEach(aposta => {
-                const acertou = (aposta.palpite === resultado_final);
-                const novoStatus = acertou ? 'GANHOU' : 'PERDEU';
+                    // 3. Processa cada aposta
+                    apostas.forEach(aposta => {
+                        const acertou = aposta.palpite === resultado_final;
+                        const novoStatus = acertou ? 'GANHOU' : 'PERDEU';
 
-                // Atualiza status da aposta
-                db.query('UPDATE apostas_jogador SET status = ? WHERE id = ?', [novoStatus, aposta.id]);
+                        // 4. Atualiza status da aposta (TABELA CORRETA)
+                        db.query(
+                            'UPDATE aposta SET status = ? WHERE id = ?',
+                            [novoStatus, aposta.id],
+                            (err) => {
+                                if (err) console.error("Erro ao atualizar aposta:", err);
+                            }
+                        );
 
-                if (acertou) {
-                    const premio = parseFloat(aposta.retorno);
-                    
-                    // A: Paga o usuário somando ao saldo
-                    db.query('UPDATE usuario SET saldo = saldo + ? WHERE id = ?', [premio, aposta.id_usuario], (errPay) => {
-                        if (!errPay) {
-                            // B: Registra na tabela transacoes
-                            const desc = `Prêmio: ${aposta.palpite} no Jogo ID ${id_jogo}`;
-                            const sqlTrans = 'INSERT INTO transacoes (id_usuario, valor, descricao, data) VALUES (?, ?, ?, NOW())';
-                            
-                            db.query(sqlTrans, [aposta.id_usuario, premio, desc], (errT) => {
-                                if (errT) console.error("❌ Erro transação:", errT);
-                            });
+                        if (acertou) {
+                            const premio = Number(aposta.retorno);
+
+                            // 5. Credita saldo do usuário
+                            db.query(
+                                'UPDATE usuario SET saldo = saldo + ? WHERE id = ?',
+                                [premio, aposta.id_usuario],
+                                (err) => {
+                                    if (!err) {
+                                        // 6. Registra transação
+                                        db.query(
+                                            'INSERT INTO transacoes (id_usuario, valor, descricao) VALUES (?, ?, ?)',
+                                            [
+                                                aposta.id_usuario,
+                                                premio,
+                                                `Prêmio aposta ${aposta.id} | Jogo ${id_jogo}`
+                                            ]
+                                        );
+                                    }
+                                }
+                            );
                         }
                     });
-                }
-            });
 
-            res.send("Jogo finalizado, vencedores pagos e histórico de transações atualizado!");
-        });
-    });
+                    res.send("Jogo finalizado, apostas processadas e pagamentos realizados!");
+                }
+            );
+        }
+    );
 });
 
 module.exports = router;

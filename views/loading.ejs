@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Carregando...</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e40af);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+    }
+
+    .container {
+      text-align: center;
+      animation: fadeIn 0.8s ease;
+    }
+
+    h2 {
+      margin-bottom: 25px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .loader {
+      width: 80px;
+      height: 80px;
+      border: 6px solid rgba(255,255,255,0.2);
+      border-top-color: #38bdf8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    .msg {
+      margin-top: 20px;
+      font-size: 14px;
+      opacity: 0.8;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%,100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h2>Preparando seus jogos</h2>
+    <div class="loader"></div>
+    <div class="msg">Carregando apostas disponíveis...</div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      window.location.href = "/apostar";
+    }, 2000);
+  </script>
+</body>
+</html>

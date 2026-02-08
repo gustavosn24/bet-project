@@ -5,138 +5,152 @@
   <title>Criar Conta</title>
 
   <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 0;
-    }
+  * {
+    box-sizing: border-box;
+  }
 
-    .container {
-      background: #fff;
-      padding: 30px 35px;
-      border-radius: 10px;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
-    }
+  body {
+    margin: 0;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #1e3a8a, #0ea5e9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #333;
-    }
+  .container {
+    width: 100%;
+    max-width: 390px;
+    background: #f8fafc;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+    animation: slideUp 0.6s ease;
+  }
 
-    form div {
-      margin-bottom: 15px;
-    }
+  h2 {
+    text-align: center;
+    color: #0f172a;
+    margin-bottom: 25px;
+  }
 
-    label {
-      font-size: 14px;
-      color: #555;
-    }
+  label {
+    font-size: 13px;
+    color: #475569;
+  }
 
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      transition: border 0.3s;
-    }
+  input {
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    padding: 13px;
+    border-radius: 14px;
+    border: 1px solid #cbd5f5;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+  }
 
-    input:focus {
-      border-color: #2c5364;
-    }
+  input::placeholder {
+    color: #94a3b8;
+  }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      background: #2c5364;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
+  input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 3px rgba(56,189,248,0.35);
+  }
 
-    button:hover {
-      background: #203a43;
-    }
+  button {
+    width: 100%;
+    padding: 13px;
+    margin-top: 5px;
+    background: linear-gradient(135deg, #6366f1, #0ea5e9);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.3s;
+  }
 
-    p {
-      text-align: center;
-      font-size: 14px;
-      margin-top: 15px;
-    }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(99,102,241,0.45);
+  }
 
-    a {
-      color: #2c5364;
-      text-decoration: none;
-      font-weight: bold;
-    }
+  .erro {
+    background: #fee2e2;
+    color: #b91c1c;
+    padding: 12px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+  }
 
-    a:hover {
-      text-decoration: underline;
-    }
+  .links {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #475569;
+  }
 
-    .erro {
-      background: #ffe5e5;
-      color: #c0392b;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 14px;
+  .links a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .links a:hover {
+    text-decoration: underline;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(25px);
     }
-  </style>
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
+
 </head>
 
 <body>
   <div class="container">
-    <h2>Criar Conta</h2>
+    <h2>👤 Criar Conta</h2>
 
     <% if (erro) { %>
-      <p class="erro"><%= erro %></p>
+      <div class="erro"><%= erro %></div>
     <% } %>
 
     <form action="/register" method="POST">
-      <div>
-        <label>CPF</label>
-        <input type="text" name="cpf" required>
-      </div>
+      <label>CPF</label>
+      <input type="text" name="cpf" placeholder="Digite seu CPF" required>
 
-      <div>
-        <label>Nome</label>
-        <input type="text" name="nome" required>
-      </div>
+      <label>Nome</label>
+      <input type="text" name="nome" placeholder="Seu nome completo" required>
 
-      <div>
-        <label>Email</label>
-        <input type="email" name="email" required>
-      </div>
+      <label>Email</label>
+      <input type="email" name="email" placeholder="exemplo@email.com" required>
 
-      <div>
-        <label>Senha</label>
-        <input type="password" name="senha" required>
-      </div>
+      <label>Senha</label>
+      <input type="password" name="senha" placeholder="••••••••" required>
 
       <button type="submit">Registrar</button>
     </form>
 
-    <p>
-      Já tem conta?
-      <a href="/login">Entrar</a>
-      <p>conta de administrador? <a href="/admin/register">criar conta</a></p>
-    </p>
+    <div class="links">
+      <p>Já tem conta? <a href="/login">Entrar</a></p>
+      <p>Conta de administrador? <a href="/admin/register">Criar conta</a></p>
+    </div>
   </div>
 </body>
 </html>

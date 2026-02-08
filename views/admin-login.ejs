@@ -5,47 +5,57 @@
   <title>Login Admin</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #020617, #0f172a);
+      background: radial-gradient(circle at top, #020617, #0f172a 45%, #000);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .container {
-      width: 340px;
+      width: 360px;
       text-align: center;
     }
 
     h2 {
-      color: #fff;
-      margin-bottom: 20px;
+      color: #e5e7eb;
+      margin-bottom: 22px;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
     .form-card {
-      background: #020617;
-      padding: 30px;
-      border-radius: 14px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+      background: rgba(2,6,23,0.85);
+      backdrop-filter: blur(6px);
+      padding: 32px;
+      border-radius: 18px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+      border: 1px solid rgba(148,163,184,0.1);
       display: flex;
       flex-direction: column;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .form-card input {
-      margin-bottom: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #334155;
+      margin-bottom: 16px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
       background: #020617;
-      color: #fff;
+      color: #e5e7eb;
       font-size: 14px;
+      transition: all 0.2s ease;
     }
 
     .form-card input::placeholder {
@@ -55,38 +65,43 @@
     .form-card input:focus {
       outline: none;
       border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
     }
 
     .form-card button {
-      padding: 12px;
-      background: #3b82f6;
+      margin-top: 6px;
+      padding: 14px;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
       color: #020617;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
+      box-shadow: 0 10px 25px rgba(59,130,246,0.4);
+      transition: all 0.25s ease;
     }
 
     .form-card button:hover {
-      background: #2563eb;
+      transform: translateY(-2px);
+      box-shadow: 0 15px 35px rgba(59,130,246,0.6);
     }
 
     .erro {
       background: rgba(239,68,68,0.2);
       color: #fecaca;
-      padding: 10px;
-      border-radius: 8px;
-      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 18px;
       font-size: 14px;
+      border: 1px solid rgba(239,68,68,0.35);
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h2>🔐 Login Admin</h2>
+    <h2>🔐 Login Administrativo</h2>
 
     <form method="POST" action="/admin/login" class="form-card">
       <input type="email" name="email" placeholder="Email" required>

@@ -4,54 +4,179 @@
   <meta charset="UTF-8">
   <title>Painel do Administrador</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: linear-gradient(135deg, #020617, #0f172a);
-      color: #e5e7eb;
-      padding: 30px;
-    }
-    .container { max-width: 1200px; margin: auto; }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-    h1 { margin: 0; font-size: 26px; }
-    .btn-add {
-      background: #22c55e;
-      color: #022c22;
-      padding: 10px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
-    .btn-add:hover { background: #16a34a; }
-    .card {
-      background: #020617;
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    thead { background: #1e293b; }
-    th { padding: 14px 10px; font-size: 14px; text-transform: uppercase; }
-    td { padding: 12px 10px; border-bottom: 1px solid #1e293b; font-size: 14px; text-align: center; }
-    .acoes { display: flex; justify-content: center; gap: 8px; }
-    a, button {
-      border: none; cursor: pointer; border-radius: 6px;
-      padding: 7px 12px; font-size: 13px; color: #fff;
-      transition: 0.2s;
-    }
-    .btn-edit { background: #3b82f6; text-decoration: none; }
-    .btn-delete { background: #ef4444; }
-    .btn-finish { background: #10b981; }
-    button:hover { opacity: 0.8; transform: scale(1.05); }
-    .empty { text-align: center; padding: 20px; color: #9ca3af; }
-  </style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    background: radial-gradient(circle at top, #020617, #020617 40%, #000);
+    color: #e5e7eb;
+    padding: 30px;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-add {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #022c22;
+    padding: 12px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 10px 25px rgba(34,197,94,0.35);
+    transition: all 0.25s ease;
+  }
+
+  .btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(34,197,94,0.55);
+  }
+
+  .card {
+    background: rgba(2,6,23,0.85);
+    backdrop-filter: blur(6px);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.6);
+    border: 1px solid rgba(148,163,184,0.1);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+
+  thead {
+    background: #020617;
+  }
+
+  th {
+    padding: 14px 10px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #94a3b8;
+  }
+
+  tbody tr {
+    transition: background 0.2s ease;
+  }
+
+  tbody tr:hover {
+    background: rgba(30,41,59,0.4);
+  }
+
+  td {
+    padding: 14px 10px;
+    border-bottom: 1px solid #1e293b;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .acoes {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  a, button {
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.2s ease;
+  }
+
+  .btn-edit {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    text-decoration: none;
+  }
+
+  .btn-delete {
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
+  }
+
+  .btn-finish {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  button:hover, a:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .status-finalizado {
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(100,116,139,0.2);
+    color: #94a3b8;
+  }
+
+  .odds {
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  .odd {
+    background: rgba(148,163,184,0.12);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 30px;
+    color: #9ca3af;
+    font-style: italic;
+  }
+
+  .fade-delete {
+  animation: deleteRow 0.55s ease forwards;
+}
+
+@keyframes deleteRow {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  60% {
+    opacity: 0.4;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-40px);
+    height: 0;
+  }
+}
+
+</style>
+
 </head>
 
 <body>
@@ -80,7 +205,8 @@
           <% } %>
 
           <% jogos.forEach(jogo => { %>
-            <tr>
+            <tr id="jogo-<%= jogo.id %>">
+
               <td><%= jogo.id %></td>
               <td><strong><%= jogo.time_casa %></strong> vs <strong><%= jogo.time_fora %></strong></td>
               <td><%= jogo.data_jogo %></td>
@@ -97,7 +223,8 @@
 
                   <a href="/admin/jogos/editar/<%= jogo.id %>" class="btn-edit">✏️ Editar</a>
                   
-                  <a href="/jogos/deletar/<%= jogo.id %>" class="btn-delete" onclick="return confirm('Excluir este jogo?')">🗑️ Excluir</a>
+                  <button class="btn-delete" onclick="excluirJogo(<%= jogo.id %>)">🗑️ Excluir</button>
+
                 </div>
               </td>
             </tr>
@@ -139,6 +266,34 @@
       }
     });
   }
+
+  function excluirJogo(id) {
+    Swal.fire({
+      title: 'Excluir jogo?',
+      text: 'Essa ação não pode ser desfeita.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#ef4444'
+    }).then((result) => {
+      if (!result.isConfirmed) return;
+
+      const linha = document.getElementById('jogo-' + id);
+
+      if (!linha) {
+        window.location.href = `/jogos/deletar/${id}`;
+        return;
+      }
+
+      linha.classList.add('fade-delete');
+
+      setTimeout(() => {
+        window.location.href = `/jogos/deletar/${id}`;
+      }, 550);
+    });
+  }
+
 </script>
 </body>
 </html>

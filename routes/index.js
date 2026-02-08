@@ -64,7 +64,7 @@ router.post('/login', (req, res) => {
     }
 
     req.session.usuario = users[0];
-    res.redirect('/apostar');
+    res.redirect('/loading');
   });
 });
 
@@ -265,7 +265,7 @@ router.post('/admin/login', (req, res) => {
     }
 
     req.session.admin = rows[0];
-    res.redirect('/admin');
+    res.redirect('/admin-loading');
   });
 });
 
@@ -412,5 +412,22 @@ router.post('/apostar', auth, (req, res) => {
         });
     });
 });
+
+router.get('/admin-loading', (req, res) => {
+  if (!req.session.admin) {
+    return res.redirect('/admin/login');
+  }
+  res.render('admin-loading');
+});
+
+router.get('/loading', (req, res) => {
+  if (!req.session.usuario) {
+    return res.redirect('/login');
+  }
+  res.render('loading');
+});
+
+
+
 
 module.exports = router;

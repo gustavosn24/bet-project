@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Carregando Painel</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #020617, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+      overflow: hidden;
+    }
+
+    .box {
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      animation: pulse 1.8s infinite;
+    }
+
+    .spinner {
+      width: 80px;
+      height: 80px;
+      border: 6px solid rgba(255,255,255,0.15);
+      border-top-color: #22c55e;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    .progress {
+      width: 260px;
+      height: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 30px auto 12px;
+    }
+
+    .bar {
+      width: 0;
+      height: 100%;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      animation: load 3s forwards;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #94a3b8;
+      height: 18px;
+      transition: opacity 0.3s;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes load {
+      to { width: 100%; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <div class="logo">⚙️ ADMIN</div>
+
+    <div class="spinner"></div>
+
+    <div class="progress">
+      <div class="bar"></div>
+    </div>
+
+    <div class="status" id="status">Validando credenciais...</div>
+  </div>
+
+  <script>
+    const status = document.getElementById('status');
+
+    const mensagens = [
+      'Validando credenciais...',
+      'Carregando configurações...',
+      'Sincronizando dados...',
+      'Preparando painel...'
+    ];
+
+    let i = 0;
+    const intervalo = setInterval(() => {
+      status.style.opacity = 0;
+      setTimeout(() => {
+        status.textContent = mensagens[i % mensagens.length];
+        status.style.opacity = 1;
+        i++;
+      }, 200);
+    }, 700);
+
+    setTimeout(() => {
+      clearInterval(intervalo);
+      window.location.href = "/admin";
+    }, 3000);
+  </script>
+
+</body>
+</html>
