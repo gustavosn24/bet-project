@@ -210,6 +210,62 @@
       color: #777;
       font-weight: bold;
     }
+
+    .bet-loading {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.bet-loading.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.bet-box {
+  text-align: center;
+  animation: pop 0.6s ease;
+}
+
+.chip {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 6px solid rgba(148,163,184,0.3);
+  border-top: 6px solid #22c55e;
+  animation: spin 2.5s linear infinite;
+  margin: auto;
+}
+
+.bet-text {
+  margin-top: 20px;
+  font-size: 15px;
+  color: #94a3b8;
+  letter-spacing: 1px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
   </style>
 </head>
 
@@ -248,7 +304,9 @@
               </span>
             </div>
 
-            <form action="/apostar" method="POST">
+            <form action="/apostar" method="POST" onsubmit="return loadingAposta(this)">
+
+
               <input type="hidden" name="id_jogo" value="<%= jogo.id %>">
 
               <div class="opcoes-aposta">
@@ -296,6 +354,32 @@
               </div>
               <% } %>
   </div>
+
+  <div class="bet-loading" id="betLoading">
+  <div class="bet-box">
+    <div class="chip"></div>
+    <div class="bet-text">Confirmando sua aposta...</div>
+  </div>
+</div>
+ 
+<script>
+  function loadingAposta(form) {
+    const overlay = document.getElementById('betLoading');
+    overlay.classList.add('active');
+
+    const btn = form.querySelector('button');
+    btn.disabled = true;
+    btn.innerText = 'Processando...';
+    btn.style.opacity = '0.7';
+
+    // mantém a animação visível
+    setTimeout(() => {
+      form.submit();
+    }, 2500);
+
+    return false;
+  }
+</script>
 
 
 </body>
